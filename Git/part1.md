@@ -371,3 +371,252 @@ git commit -m "Apply .gitignore rules"
 
 
 
+## Q16. How did you handle switching between multiple Git branches during parallel development?
+**Scenario:**  
+While fixing a bug in `feature/cart-validation`, I also had to test a new feature from `feature/wishlist-module`.
+
+**Issue/Need:**  
+Avoid mixing code or uncommitted changes when switching.
+
+**Concept Used:**  
+`git stash`, branch switching, and context isolation.
+
+**Steps Taken:**
+```bash
+git stash
+git checkout feature/wishlist-module
+# Work on wishlist
+git checkout feature/cart-validation
+git stash pop
+````
+
+**Project Justification During Interview:**
+“To prevent conflicts, I used `git stash` before switching branches. This helped me isolate tasks while working in a fast-paced environment with multiple features.”
+
+---
+
+## Q17. Describe how you implemented Git Flow strategy in a real project.
+
+**Scenario:**
+Our project followed structured releases and hotfixes using Git Flow.
+
+**Issue/Need:**
+Standardize development, testing, and production releases.
+
+**Concept Used:**
+Git Flow (main → develop → feature → release/hotfix)
+
+**Branch Strategy:**
+
+* `main`: Production
+* `develop`: Integration
+* `feature/*`: New features
+* `release/*`: Pre-prod testing
+* `hotfix/*`: Emergency fixes
+
+**Project Justification During Interview:**
+“In our team, we used Git Flow to handle feature development, scheduled releases, and urgent fixes. This streamlined our CI/CD and reduced merge conflicts.”
+
+---
+
+## Q18. How did you deal with accidental commits to the main branch?
+
+**Scenario:**
+A junior developer accidentally committed directly to `main` instead of `develop`.
+
+**Issue/Need:**
+Undo the commit and move changes to the correct branch.
+
+**Concept Used:**
+`git revert`, `git reset`, and cherry-pick.
+
+**Steps Taken:**
+
+```bash
+git checkout main
+git revert <commit-id>
+git checkout develop
+git cherry-pick <commit-id>
+```
+
+**Project Justification During Interview:**
+“We protected the `main` branch but had one accidental push. We reverted the commit in `main` and cherry-picked it into `develop` for proper testing.”
+
+---
+
+## Q19. Explain how you performed a rollback using Git in a production deployment.
+
+**Scenario:**
+A faulty deployment was traced to a buggy commit in `v1.4.2`.
+
+**Issue/Need:**
+Quick rollback to last stable version.
+
+**Concept Used:**
+Tags and `git checkout`, `git revert`.
+
+**Steps Taken:**
+
+```bash
+git checkout tags/v1.4.1
+# Optional: create rollback branch
+git checkout -b rollback-fix
+```
+
+**Project Justification During Interview:**
+“We tagged all releases. When v1.4.2 failed, we checked out v1.4.1, tested it, and redeployed. Tagging helped us manage rollbacks cleanly.”
+
+---
+
+## Q20. How did you use GitHub Actions or CI/CD with Git branches?
+
+**Scenario:**
+We used GitHub Actions to automatically deploy changes pushed to `main` and run tests on `develop`.
+
+**Issue/Need:**
+Automate testing and deployment without manual intervention.
+
+**Concept Used:**
+GitHub Actions workflow, branch-based triggers.
+
+**Example `main.yml`:**
+
+```yaml
+on:
+  push:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install && npm test
+```
+
+**Project Justification During Interview:**
+“Our GitHub Actions workflow ensured that any code pushed to `develop` was tested automatically. Once merged into `main`, deployment was triggered.”
+
+---
+
+## Q21. How did you rename a Git branch that was incorrectly named?
+
+**Scenario:**
+A teammate named a branch `feature/logiin-page` instead of `feature/login-page`.
+
+**Issue/Need:**
+Rename the branch locally and on the remote without losing commits.
+
+**Concept Used:**
+Branch rename with Git.
+
+**Steps Taken:**
+
+```bash
+git branch -m feature/logiin-page feature/login-page
+git push origin --delete feature/logiin-page
+git push origin feature/login-page
+git push --set-upstream origin feature/login-page
+```
+
+**Project Justification During Interview:**
+“We maintained strict naming conventions like `feature/*`. We renamed incorrect branches early to maintain consistency and automation rules.”
+
+---
+
+## Q22. Share an experience where you recovered deleted Git commits.
+
+**Scenario:**
+One of our developers ran a hard reset and lost unpushed commits.
+
+**Issue/Need:**
+Recover the commit using Git’s reflog feature.
+
+**Concept Used:**
+`git reflog` and commit recovery.
+
+**Steps Taken:**
+
+```bash
+git reflog
+git checkout <commit-id>
+git branch recovered-work
+```
+
+**Project Justification During Interview:**
+“Thanks to `git reflog`, we recovered lost work after an unintended reset. This saved hours of developer effort.”
+
+---
+
+## Q23. How did you resolve the ‘detached HEAD’ state during testing?
+
+**Scenario:**
+I checked out a specific commit to test a bug fix but forgot to create a branch.
+
+**Issue/Need:**
+Avoid losing changes made in a detached state.
+
+**Concept Used:**
+Creating a new branch from a detached HEAD.
+
+**Steps Taken:**
+
+```bash
+git checkout -b bugfix/token-expiry
+```
+
+**Project Justification During Interview:**
+“I was in a detached HEAD state while testing. After changes worked, I created a new branch to keep them safe and raise a PR.”
+
+---
+
+## Q24. Describe a time when you cleaned up unnecessary local Git branches.
+
+**Scenario:**
+Over time, my local repo had 20+ stale feature branches that were already merged.
+
+**Issue/Need:**
+Cleanup local repo and avoid confusion.
+
+**Concept Used:**
+Pruning merged branches.
+
+**Steps Taken:**
+
+```bash
+git branch --merged
+git branch -d feature/old-branch
+git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
+```
+
+**Project Justification During Interview:**
+“I regularly cleaned up stale branches after successful merges to keep the workspace tidy and avoid redundant code base navigation.”
+
+---
+
+## Q25. How did you enforce branch protection rules in GitHub?
+
+**Scenario:**
+We wanted to prevent direct pushes to `main` and enforce PR reviews.
+
+**Issue/Need:**
+Avoid unreviewed or accidental changes to production.
+
+**Concept Used:**
+GitHub branch protection rules.
+
+**Steps Taken:**
+
+* GitHub → Repository Settings → Branches → Add Rule for `main`
+* Enabled:
+
+  * Require pull request before merging
+  * Require status checks to pass
+  * Restrict who can push
+
+**Project Justification During Interview:**
+“We used branch protection to secure our `main` branch. All code had to go through PRs, review, and CI validation before merge.”
+
+
+
+
