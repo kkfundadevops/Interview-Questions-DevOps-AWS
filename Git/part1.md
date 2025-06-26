@@ -171,3 +171,203 @@ git push origin v1.0.0
 “We used annotated tags to mark production-ready commits. It helped our CI/CD pipelines deploy specific versions and allowed easy rollbacks during hotfixes.”
 
 
+## Q8. Share your experience of forking a public repository and customizing it for internal use.
+**Scenario:**  
+We wanted to use an open-source Helm chart from Bitnami and customize it for our Kubernetes setup.
+
+**Issue/Need:**  
+Customize and manage our version without affecting upstream changes.
+
+**Concept Used:**  
+Forking and periodic syncing with upstream.
+
+**Steps Taken:**  
+- Forked the repo under our GitHub org.  
+- Made changes under `our-org/helm-charts`.  
+- Synced with upstream via:
+```bash
+git remote add upstream https://github.com/bitnami/helm-charts.git
+git fetch upstream
+git merge upstream/main
+````
+
+**Project Justification During Interview:**
+“We forked the Helm charts repo to tailor it to our infrastructure needs while still periodically syncing with upstream to get security patches.”
+
+---
+
+## Q9. Describe a situation where you used GitHub Issues for project tracking.
+
+**Scenario:**
+Our QA team reported a bug in the login module during UAT.
+
+**Issue/Need:**
+Track it, assign it, and ensure it's resolved and tested before the next release.
+
+**Concept Used:**
+GitHub Issues and Labels.
+
+**Steps Taken:**
+
+* Created an issue titled: "Login fails on special character password"
+* Assigned to a developer
+* Added labels: `bug`, `priority-high`, `module-user-service`
+* Linked it to the relevant PR
+
+**Project Justification During Interview:**
+“We used GitHub Issues for cross-team tracking. This helped us avoid miscommunication and improved transparency in sprint planning.”
+
+---
+
+## Q10. Tell me about a time you used `git log` and `git blame` for debugging production issues.
+
+**Scenario:**
+A recent commit introduced a bug in `cart-service` pricing logic.
+
+**Issue/Need:**
+Identify which commit caused it and who made the change.
+
+**Concept Used:**
+`git log`, `git blame`, and `git show`.
+
+**Commands Used:**
+
+```bash
+git log -p cart/price.js
+git blame cart/price.js
+git show <commit-id>
+```
+
+**Project Justification During Interview:**
+“We traced a pricing bug to a specific commit using `git blame`. This helped us fix the logic quickly and add test cases to prevent recurrence.”
+
+---
+
+## Q11. How did you create a README file that helped onboard new developers?
+
+**Scenario:**
+New joiners were struggling to understand the project structure and setup steps.
+
+**Issue/Need:**
+Improve onboarding speed and reduce mentor dependency.
+
+**Concept Used:**
+Creating detailed `README.md`.
+
+**Content Included:**
+
+* Project architecture diagram
+* Module-wise responsibilities
+* Setup steps (Git clone, environment variables, DB setup)
+* Branching strategy
+
+**Project Justification During Interview:**
+“We maintained a standardized README for each repo, which helped new developers get started independently in less than an hour.”
+
+---
+
+## Q12. Describe how you handled a hotfix in production using Git.
+
+**Scenario:**
+A prod crash occurred due to a null pointer in `payment-service`.
+
+**Issue/Need:**
+Fix it urgently without disrupting main development.
+
+**Concept Used:**
+Hotfix branch from main.
+
+**Steps Taken:**
+
+```bash
+git checkout main
+git pull
+git checkout -b hotfix/null-check
+# Fix applied
+git commit -am "Add null check for transaction ID"
+git push origin hotfix/null-check
+# Raised PR to main → Merge → Deploy
+```
+
+**Project Justification During Interview:**
+“We used hotfix branching to isolate and quickly patch production bugs without interfering with ongoing features on the `develop` branch.”
+
+---
+
+## Q13. How did you automate GitHub access using Personal Access Tokens (PAT) for shell scripts?
+
+**Scenario:**
+We had to automate repo cloning and release tagging in a Jenkins pipeline.
+
+**Issue/Need:**
+Avoid manual GitHub login and keep authentication secure.
+
+**Concept Used:**
+GitHub PAT for automation.
+
+**Steps Taken:**
+
+* Generated PAT with `repo` scope from GitHub settings
+* Stored securely in Jenkins credentials
+* Used in shell scripts:
+
+```bash
+git clone https://<token>@github.com/org-name/repo.git
+```
+
+**Project Justification During Interview:**
+“In CI/CD, we used PATs to clone private repos and push tags securely without exposing developer credentials.”
+
+---
+
+## Q14. Tell me about a situation where multiple developers committed to the same branch. How did you manage?
+
+**Scenario:**
+During sprint closure, 4 developers pushed to the same `feature/cart-discount` branch.
+
+**Issue/Need:**
+Avoid merge chaos and maintain clean commit history.
+
+**Concept Used:**
+Team coordination, squash commits, pull regularly.
+
+**Steps Taken:**
+
+* Set team guidelines to `pull --rebase` before pushing
+* Used squash during merge to clean history:
+
+```bash
+git merge --squash feature/cart-discount
+```
+
+**Project Justification During Interview:**
+“We coordinated well to avoid stepping on each other’s changes. Squashing commits helped us maintain a clean, meaningful commit log.”
+
+---
+
+## Q15. Share a time when you used `.gitignore` to avoid committing sensitive or large files.
+
+**Scenario:**
+Node modules, environment files, and logs were mistakenly pushed initially.
+
+**Issue/Need:**
+Prevent unnecessary file tracking and repo bloat.
+
+**Concept Used:**
+`.gitignore` best practices.
+
+**Steps Taken:**
+
+```bash
+echo "node_modules/" >> .gitignore
+echo ".env" >> .gitignore
+echo "logs/" >> .gitignore
+git rm -r --cached node_modules .env logs
+git commit -m "Apply .gitignore rules"
+```
+
+**Project Justification During Interview:**
+“We used `.gitignore` to keep our repos clean and secure. It helped reduce clone time and avoided sensitive info leakage.”
+
+
+
