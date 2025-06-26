@@ -618,5 +618,129 @@ GitHub branch protection rules.
 “We used branch protection to secure our `main` branch. All code had to go through PRs, review, and CI validation before merge.”
 
 
+## Q26. How did you handle a situation where a Git clone operation was failing due to authentication issues?
+
+**Scenario:**  
+One of our automation scripts running on a Red Hat EC2 was failing to clone a private GitHub repo.
+
+**Issue/Need:**  
+The `git clone` was prompting for credentials and failing in unattended mode.
+
+**Concept Used:**  
+Used Personal Access Token (PAT) or SSH key for non-interactive authentication.
+
+**Steps Taken:**
+```bash
+# Option 1: SSH Setup
+ssh-keygen -t ed25519 -C "ec2-user"
+cat ~/.ssh/id_ed25519.pub
+# Added public key to GitHub > Settings > SSH Keys
+
+# Option 2: PAT usage
+git clone https://<PAT>@github.com/org/repo.git
+````
+
+**Project Justification During Interview:**
+“We faced clone failures in headless automation jobs. Switching from HTTPS to SSH or using a PAT resolved the issue securely and consistently.”
+
+---
+
+## Q27. Explain how you verified Git remote URL misconfiguration in a live CI/CD pipeline.
+
+**Scenario:**
+A Jenkins pipeline failed during a `git pull` due to a remote not found error.
+
+**Issue/Need:**
+Identify and correct incorrect remote origin configuration.
+
+**Concept Used:**
+Remote URL diagnostics and reset.
+
+**Steps Taken:**
+
+```bash
+git remote -v
+git remote set-url origin git@github.com:org/project.git
+```
+
+**Project Justification During Interview:**
+“We debugged a failing Jenkins job and found the remote URL was misconfigured after branch migration. Resetting the origin fixed the build.”
+
+---
+
+## Q28. How did you use `git cherry-pick` to backport a fix to multiple branches?
+
+**Scenario:**
+A critical fix in `develop` needed to be applied to both `release/v1.0` and `release/v1.1`.
+
+**Issue/Need:**
+Avoid reimplementing; reuse the tested commit.
+
+**Concept Used:**
+`git cherry-pick`
+
+**Steps Taken:**
+
+```bash
+git checkout release/v1.0
+git cherry-pick <commit-id>
+
+git checkout release/v1.1
+git cherry-pick <commit-id>
+```
+
+**Project Justification During Interview:**
+“We used cherry-pick to safely apply a tested fix to older release branches without rewriting logic or creating merge conflicts.”
+
+---
+
+## Q29. How did you clean up a large `.git` history that was bloated due to committed binaries?
+
+**Scenario:**
+A developer mistakenly pushed 100MB+ log and media files into the repo, affecting clone time.
+
+**Issue/Need:**
+Remove large files from entire Git history.
+
+**Concept Used:**
+BFG Repo Cleaner / Git filter-branch.
+
+**Steps Taken:**
+
+```bash
+bfg --delete-files "*.log"
+bfg --delete-folders media --no-blob-protection
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+```
+
+**Project Justification During Interview:**
+“We had to clean a polluted Git repo with media files. Using BFG and force push helped us reduce repo size from 200MB to 25MB.”
+
+---
+
+## Q30. Explain how you monitored contributors and PR activity in a GitHub organization.
+
+**Scenario:**
+As a team lead, I needed visibility into contributor performance and PR activity for reporting.
+
+**Issue/Need:**
+Track contributions and engagement without micromanaging.
+
+**Concept Used:**
+GitHub insights, contribution graphs, and API.
+
+**Steps Taken:**
+
+* GitHub → Insights → Contributors
+* GitHub → Pull Requests → Filter by label/user
+* Used GitHub API to extract stats for reports.
+
+**Project Justification During Interview:**
+“Using GitHub Insights and scripts, I monitored active contributors, PR timelines, and review cycles, which helped optimize sprint planning.”
+
+
+
+
 
 
