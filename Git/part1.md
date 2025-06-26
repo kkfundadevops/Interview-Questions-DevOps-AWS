@@ -740,6 +740,146 @@ GitHub insights, contribution graphs, and API.
 “Using GitHub Insights and scripts, I monitored active contributors, PR timelines, and review cycles, which helped optimize sprint planning.”
 
 
+## Q31. How did you use environment-specific branches like dev, qa, stage, and prod?
+
+**Scenario:**  
+Our team followed environment-based branching for an enterprise healthcare app.
+
+**Issue/Need:**  
+Each environment needed isolated deployments and approvals.
+
+**Concept Used:**  
+Environment branches: `dev`, `qa`, `stage`, `prod`
+
+**Branch Strategy:**
+- Developers merge features into `dev`
+- QA tests from `qa` branch
+- Approved builds go to `stage`, then `prod`
+
+**Commands & Steps:**
+```bash
+git checkout dev
+git merge feature/user-registration
+
+# Promote from dev to qa
+git checkout qa
+git merge dev
+
+# Promote from qa to stage
+git checkout stage
+git merge qa
+````
+
+**Project Justification During Interview:**
+“We followed an environment branching model to ensure that each stage of the release cycle was isolated and verifiable before hitting production.”
+
+---
+
+## Q32. How did you enforce standard commit messages across teams?
+
+**Scenario:**
+Developers were pushing inconsistent commit messages like "fixed stuff", which made it hard to track history.
+
+**Issue/Need:**
+Enforce clear, structured commit messages using conventions.
+
+**Concept Used:**
+Conventional commits + commit message linting
+
+**Strategy Used:**
+
+* Set rule: type(scope): message
+* Example: `feat(login): add throttle logic`
+
+**Tool Used:**
+`commitlint` in CI
+
+**Project Justification During Interview:**
+“We standardized commit messages using conventional commits to improve Git history clarity and automate changelogs for release notes.”
+
+---
+
+## Q33. Share a situation where you used GitHub CLI or API from a shell script.
+
+**Scenario:**
+As part of nightly jobs, we auto-tagged merged PRs and added release notes via script.
+
+**Issue/Need:**
+Automate GitHub tasks via shell scripts.
+
+**Concept Used:**
+GitHub CLI (`gh`) and GitHub REST API
+
+**Shell Script Sample:**
+
+```bash
+gh pr list --state merged --json title,number
+gh release create v1.2.3 --notes "Nightly Auto Release"
+```
+
+**Project Justification During Interview:**
+“We used the GitHub CLI in shell scripts to tag and track releases automatically without manual GitHub UI access.”
+
+---
+
+## Q34. How did you use GitHub Actions to restrict production deployment only from the `prod` branch?
+
+**Scenario:**
+An accidental push to `main` once triggered a production deploy.
+
+**Issue/Need:**
+Restrict deployment only when changes are merged into `prod`.
+
+**Concept Used:**
+GitHub Actions branch-based workflow trigger
+
+**Sample Workflow:**
+
+```yaml
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./deploy-to-prod.sh
+```
+
+**Project Justification During Interview:**
+“We designed GitHub Actions to only deploy on pushes to the `prod` branch, preventing risky deployments from any other source.”
+
+---
+
+## Q35. How did you manage changelogs during a large release using Git commit history?
+
+**Scenario:**
+We were preparing for v2.0 release and needed clean changelogs for QA and business stakeholders.
+
+**Issue/Need:**
+Generate changelog automatically from commit messages.
+
+**Concept Used:**
+Conventional commits + changelog generator
+
+**Tool Used:**
+`standard-version`, `auto-changelog`
+
+**Steps Taken:**
+
+```bash
+npx standard-version
+```
+
+**Project Justification During Interview:**
+“We enforced commit message standards and used `standard-version` to auto-generate changelogs based on commit logs. This made it easy to publish release notes.”
+
+
+
+
 
 
 
